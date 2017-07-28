@@ -1,0 +1,16 @@
+{
+  "name": "brewpi",
+  "version": "1.0.0",
+  "description": "TempLogger data tools",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "g@eirp.net",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "mongodb": "^2.2.30"
+  }
+}
