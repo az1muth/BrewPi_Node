@@ -14,6 +14,10 @@ app = express()
 
 app.use('/temps', require('./controllers/temps'))
 
+//set static file serving from public. mainly setup for css
+//when experimenting with bootstrap. 
+app.use(express.static('public'))
+
 // Connect to Mongo on start
 // uri stored in the db.js
 db.connect(db.uri, function(err) {

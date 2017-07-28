@@ -25,7 +25,8 @@ router.get('/', function(req,res){
 //  route for experimenting with Hicharts. 
 // serves html page with js for hichart that calls getNtemps using getJSON() 
 router.get('/chart', function(req,res){
-	res.sendFile('/Users/SMF/Documents/GzSndBox/Node/apps/BrewPi/views/highChartTest.html');
+	//res.sendFile('/Users/SMF/Documents/GzSndBox/Node/apps/BrewPi/views/highChartTest.html');
+   res.sendFile('/Users/SMF/Documents/GzSndBox/Node/apps/BrewPi/views/index.html');
 })
 
 
