@@ -26,7 +26,7 @@ router.get('/', function(req,res){
 // serves html page with js for hichart that calls getNtemps using getJSON() 
 router.get('/chart', function(req,res){
 	//res.sendFile('/Users/SMF/Documents/GzSndBox/Node/apps/BrewPi/views/highChartTest.html');
-   res.sendFile('/Users/SMF/Documents/GzSndBox/Node/apps/BrewPi/views/index.html');
+   res.sendFile('/Users/SMF/Documents/GzSndBox/Node/apps/BrewPi/views/stats.html');
 })
 
 
@@ -48,6 +48,21 @@ router.get('/getNtemps/:Ntemps', function(req, res){
  	Temps.getNtemps(numberOftemps, function(data){
  		res.send(JSON.stringify(data))
  	})
+})
+
+// gets some stats about the Collection
+router.get('/stats', function(req,res){
+	//res.send('called the stats method. Checked the console')
+	Temps.stats(function(data){
+		console.log("from Stats in router: " + data.length)
+		var strData
+		for(i=0;i<data.length;i++){
+			strData += data[i]
+		}
+		console.log(strData)
+		//data will be and array with values to use for display
+		res.send(data)
+	})
 })
 
 module.exports = router

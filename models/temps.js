@@ -1,8 +1,4 @@
 //-----CONTROLLER FOR TEMPS COLLECTION
-//--file with Mongodb connection helper functions
-//var db = require('../db')
-//-- call helper function to set the  TEMP collection for this controller
-
 //7-28-17 adding mongoose to project per mdb
 //TempModel.js includes the Schema definition and  export the model()
 //just need to require() and a new model instance will be created
@@ -26,21 +22,8 @@ exports.all = function(cb){
 	})
 	*/
 }
-
-//------ orig function to get all----
-
-//exports.all = function(cb){
-//		var collection = db.get().collection('Temp')	
-//		collection.find().toArray(function(err, results) {
-//		  	console.log("results array length: " + results.length)
-//			cb(results)
-//		})		
-//	}
-
-//-----END OF oring get all function ----
-
-
   
+
 /* returns the specified number of records. Number of records
 is pulled from the URL. using limit. also uses projection 
 to remove the id. */
@@ -58,20 +41,6 @@ exports.getNtemps = function(Nfilter,cb){
 	        		})
 	        	})
 	        // -- END mongoose approach ---
-
-	        
-
-	        // commented out orig work method
-	        /*
-			var collection = db.get().collection('Temp')
-			collection.find({},{'_id':0}).limit(Nfilter).toArray(function(err, results) {
-		  		console.log("results array length: " + results.length)
-
-				format4Chart(results, function(data){
-					cb(data)
-				})
-			})
-			*/
 }
 
 
@@ -92,15 +61,6 @@ function format4Chart(datArray, cb){
 }
 
 	
-  	//var collection = db.get().collection('Temp')
-	//collection.find().toArray(function(err, docs) {
-	//  console.log("Qurying mongo")
-	//  console.log("docs array length: " + docs.length)
-	//})
-	
-
-
-
 //hits Mongo and returns the full array. 
 function getAll (){
 		//console.log("just hit the mongo collection. ")
@@ -113,9 +73,6 @@ function getAll (){
 
 
 
-	
-
-
 function formatAll (FullMongoArray){
 	console.log ("formatting the results")
    for (i=0;i<10;i++){
@@ -124,7 +81,58 @@ function formatAll (FullMongoArray){
 	console.log(results)	
 }
 	
-	
+
+
+exports.stats = function(cb){
+	    var statArray = [];
+		Count(function(data){
+			statArray.push("Total Readings: " + data + " ")
+
+		FirstOrLast(-1,function(data){
+			//convert unix date string to datestring
+			var newDate = new Date(data.created*1000).toString();
+			statArray.push("Latest(date): " + newDate + " ")
+			statArray.push("Latest(Temp C): " + data.tempC + " ")
+			data = statArray
+			//cb(data)
+
+			FirstOrLast(1,function(data){
+				//convert unix date string to datestring
+				var newDate = new Date(data.created*1000).toString();
+				statArray.push("Oldest(date): " + newDate + " ")
+				statArray.push("Oldest(Temp C): " + data.tempC + " ")
+				data = statArray
+				cb(data)
+			})
+
+		})
+		
+	})		
+}
+
+
+// return the number of records in Temps collection	
+function Count(cb){
+	tempModel.count({},function(err,results){
+		console.log('tempModel.count:' + results)
+		cb(results)
+	})
+
+}
+
+
+// gets the most recent  and earliest entries
+// intSort order is 1 for earliest, -1 for latest(current)
+function FirstOrLast(intSort, cb){
+	var query = tempModel.findOne({});
+	query.sort({created:intSort});
+	query.exec(function(err,results){
+		//convert unix date string to datestring
+		var newDate = new Date(results.created*1000).toString();
+		console.log('Latest: ' + newDate + "   " + results.tempC);
+		cb(results)
+	})
+}
 
 
 
