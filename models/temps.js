@@ -1,29 +1,68 @@
 //-----CONTROLLER FOR TEMPS COLLECTION
 //--file with Mongodb connection helper functions
-var db = require('../db')
+//var db = require('../db')
 //-- call helper function to set the  TEMP collection for this controller
 
-
+//7-28-17 adding mongoose to project per mdb
+//TempModel.js includes the Schema definition and  export the model()
+//just need to require() and a new model instance will be created
+var tempModel = require('./TempModel.js');
 
 // returns all temps records in the collection. No formatting
+// changing to the monggose approach
+
 exports.all = function(cb){
-		var collection = db.get().collection('Temp')	
-		collection.find().toArray(function(err, results) {
-		  	console.log("results array length: " + results.length)
-			cb(results)
-			/*
-			for (i=0;i<10;i++){
-			tempArray[i] = "TempC:" + docs[i].tempC
-			}
-			*/
-		})		
-	}					
+
+	tempModel.find([],function(err,results){
+		console.log('Records in tempModel:' + results.length)
+		cb(results)
+	})
+	
+
+	/*
+	tempModel.count({},function(err,results){
+		console.log('Attempting tempModel.count:' + results)
+		cb(results)
+	})
+	*/
+}
+
+//------ orig function to get all----
+
+//exports.all = function(cb){
+//		var collection = db.get().collection('Temp')	
+//		collection.find().toArray(function(err, results) {
+//		  	console.log("results array length: " + results.length)
+//			cb(results)
+//		})		
+//	}
+
+//-----END OF oring get all function ----
+
+
   
 /* returns the specified number of records. Number of records
 is pulled from the URL. using limit. also uses projection 
 to remove the id. */
 exports.getNtemps = function(Nfilter,cb){
 	        Nfilter = parseInt(Nfilter)
+
+	        // --- using mongoose approach ----
+	        var query = tempModel.find({})
+	        query.find({})
+	        	.limit(Nfilter)
+	        	.exec( function(err, results){
+
+	        		format4Chart(results, function(data){
+	        			cb(data)
+	        		})
+	        	})
+	        // -- END mongoose approach ---
+
+	        
+
+	        // commented out orig work method
+	        /*
 			var collection = db.get().collection('Temp')
 			collection.find({},{'_id':0}).limit(Nfilter).toArray(function(err, results) {
 		  		console.log("results array length: " + results.length)
@@ -32,6 +71,7 @@ exports.getNtemps = function(Nfilter,cb){
 					cb(data)
 				})
 			})
+			*/
 }
 
 
@@ -51,13 +91,13 @@ function format4Chart(datArray, cb){
 		cb(wrapperArray)
 }
 
-	/*
-  	var collection = db.get().collection('Temp')
-	collection.find().toArray(function(err, docs) {
-	  console.log("Qurying mongo")
-	  console.log("docs array length: " + docs.length)
-	})
-	*/
+	
+  	//var collection = db.get().collection('Temp')
+	//collection.find().toArray(function(err, docs) {
+	//  console.log("Qurying mongo")
+	//  console.log("docs array length: " + docs.length)
+	//})
+	
 
 
 
