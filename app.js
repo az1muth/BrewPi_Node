@@ -44,24 +44,9 @@ db.once('open', function() {
 });
 
 
-//---Connection to mongo END of section---------
-
-// Connect to Mongo on start
-// uri stored in the db.js
-/*
-db.connect(db.uri, function(err) {
-  if (err) {
-    console.log('Unable to connect to Mongo.')
-    process.exit(1)
-  } else {
-    //app.listen(3000, function() {
-      console.log('Connected to mlab. ' + db.uri)
-    //})
-  }
-})
-*/
-
 // listen on port 3000
-app.listen(3000, function(){
-	console.log('listening on port 3000...')
-})
+app.listen(3000)
+// for ec2 or other rev proxy the ip must be specified
+//app.listen(8080, '172.31.8.215' )
+console.log('listening on port 3000...')
+

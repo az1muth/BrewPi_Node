@@ -119,8 +119,28 @@
                           renderTo: 'chart',
                           type: 'line'
                       },
-                      series: [{}]
-                  };
+                      legend: {
+                        enabled: false
+                      },
+                      title:{
+                        text: 'Temp deg C versus Time'
+                      },
+                      xAxis: {
+                          type: 'datetime',
+                          title: {
+                            text: 'date/time'
+                          },
+                          labels: {
+                            formatter: function(){
+                              var dateObj = new Date(this.value*1000);
+                              return dateObj.toLocaleDateString()
+                            },
+                            rotation: 60
+                          },
+                          tickInterval:1E6
+                      },
+                      series: [{}]      
+                };
 
                   //this gets the data for hicharts
                   // Update url  when using on ec2 or other
