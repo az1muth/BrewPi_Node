@@ -70,6 +70,89 @@
         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
       <![endif]-->
+
+      <script type="text/javascript">
+            //this gets the data for hicharts
+            // Update url  when using on ec2 or other
+          function makeChart(Ndays){
+
+            //setup JSON doc with desired chart definition
+            var options = {
+                chart: {
+                    type: 'line'
+                },
+                legend: {
+                  enabled: false
+                },
+                title:{
+                  text: 'Temp deg C versus Time'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    title: {
+                      text: 'date/time'
+                    },
+                    labels: {
+                      formatter: function(){
+                        var dateObj = new Date(this.value);
+                        return dateObj.toLocaleDateString()
+                      },
+                      rotation: 60
+                    },
+                    tickInterval:1E6
+                },
+                series: [{}]
+            };
+
+            //url with desired number of days added. days in input param 
+            //to this function
+           // var strUrl = 'http://localhost:3000/temps/LastNDays/' + Ndays;
+           var strUrl = 'http://18.220.34.59/temps/LastNDays/' + Ndays;
+            
+             var chartDiv = document.getElementById("chart");
+             //show a quick message that data is being retrived
+             var strChartDivHTML = '<h2>RETRIEVING NEW DATA.....</h2>';
+             chartDiv.innerHTML = strChartDivHTML;
+
+             //$.getJSON('http://localhost:3000/temps/LastNDays/10', function(data) {
+               $.getJSON(strUrl, function(data) {
+                    options.series[0].data = data;
+                    var chart = new Highcharts.Chart(chartDiv,options);
+              });
+          };
+      
+          
+
+
+          //get the latest stats about the data in the mongodB
+            function getStats(){
+                 // Update url  when using on ec2 or other
+              //$.getJSON('http://localhost:3000/temps/stats', function(data) {
+              $.getJSON('http://18.220.34.59/temps/stats', function(data) {
+                  //build up a string of html and the data return data                   
+                  var strHtml = '<ul>'
+                  for(i=0;i<data.length;i++){
+                    strHtml += '<li>'+data[i]+'</li>'
+                  }
+                  strHtml += '</ul>'
+
+                  // update the document element with the 
+                  // string of HTML
+                  //get the document element
+                  //var _statList = document.getElementById("statList");
+                 // _statList.innerHTML = strHtml;
+                  document.getElementById("statList").innerHTML = strHtml
+                  console.log(strHtml)
+                });
+                 
+            };   
+
+
+            function doEmAll(_Ndays){
+              makeChart(_Ndays);
+              getStats();
+            };
+      </script>
     </head>
 
     <body>
@@ -92,13 +175,15 @@
               <li class="active"><a href="#">Home</a></li>
               <li><a href="#about">About</a></li>
               <li><a href="#contact">Contact</a></li>
+              <li><a href="" onclick="doEmAll(5);return false;">5 days</a></li>
+              <li><a href="" onclick="doEmAll(50);return false;">50 days</a></li>
+               <li><a href="" onclick="doEmAll(5000);return false;">All</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
       </nav>
 
       <div class="container">
-
         <div class="starter-template">
           <h4>RPI3 Temp Sensor Data (Chart & Stats)</h4>
           <p>Chart shows the dateTime vd Temp reading.  Basic stats about time and temp range below.
@@ -107,64 +192,13 @@
          <div id="statList"> 
             stats list should endup here
         </div>
-
         <div id="chart">
+            <!--HIgh chart will get rendered here -->
             <h2>HighCharts (Line Chart) test. Using Node and Mongo</h2>
-            <script type="text/javascript">
-              $(document).ready(function() {
-
-                  //sets some highCharts basic options
-                  var options = {
-                      chart: {
-                          renderTo: 'chart',
-                          type: 'line'
-                      },
-                      legend: {
-                        enabled: false
-                      },
-                      title:{
-                        text: 'Temp deg C versus Time'
-                      },
-                      xAxis: {
-                          type: 'datetime',
-                          title: {
-                            text: 'date/time'
-                          },
-                          labels: {
-                            formatter: function(){
-                              var dateObj = new Date(this.value*1000);
-                              return dateObj.toLocaleDateString()
-                            },
-                            rotation: 60
-                          },
-                          tickInterval:1E6
-                      },
-                      series: [{}]      
-                };
-
-                  //this gets the data for hicharts
-                  // Update url  when using on ec2 or other
-                  $.getJSON('http://localhost:3000/temps/getNtemps/40000', function(data) {
-                      options.series[0].data = data;
-                      var chart = new Highcharts.Chart(options);
-                  });
-
-                  //this gets and formats the stats data
-                  // Update url  when using on ec2 or other
-                  $.getJSON('http://localhost:3000/temps/stats', function(data) {
-                        var strHtml = '<ul>'
-                        for(i=0;i<data.length;i++){
-                          strHtml += '<li>'+data[i]+'</li>'
-                        }
-                        strHtml += '</ul>'
-                        document.getElementById("statList").innerHTML = strHtml
-                        console.log(strHtml)
-                    });
-
-              });
-        </script>
+            <!-- 
+            8-7-17 moving the script to create the chart to the head section
+            -->
         </div><!-- /chart -->
-
       </div><!-- /.container -->
 
 

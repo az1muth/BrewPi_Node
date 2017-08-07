@@ -11,5 +11,10 @@ var TempModelSchema = new schema({
 	created: Number
 })
 
+TempModelSchema.virtual('JS_created').get(function(){
+	//value stored in mongo is unix so multiply by 1000 to get javascript 
+	return this.created * 1000;
+})
+
 //exports function to creat TempModel model class
 module.exports = mongoose.model('TempModel',TempModelSchema,'Temp');

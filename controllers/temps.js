@@ -26,8 +26,20 @@ router.get('/', function(req,res){
 // serves html page with js for hichart that calls getNtemps using getJSON() 
 router.get('/chart', function(req,res){
 	//res.sendFile('/Users/SMF/Documents/GzSndBox/Node/apps/BrewPi/views/highChartTest.html');
-   res.sendFile('/Users/SMF/Documents/GzSndBox/Node/apps/BrewPi/views/stats.html');
-})
+   //build the path name. Cleaner to adjust when moving to various dev machines
+  	var zbDir = 'C:\\Users\\gman\\Documents\\Node\\apps\\BrewPi\\views'
+  	var macDir = '/Users/SMF/Documents/GzSndBox/Node/apps/BrewPi/views/'
+  	var ec2Dir = 'var/www/node/BrewPi/views'
+
+  var pth2View = path.format({
+   	dir: ec2Dir,
+   	base: 'stats.html'
+   })
+
+   console.log(pth2View)
+   //res.sendFile('/Users/SMF/Documents/GzSndBox/Node/apps/BrewPi/views/stats.html');
+   res.sendFile(pth2View)
+})	
 
 
 // retuns all the records from the TEMP collection
@@ -46,6 +58,16 @@ router.get('/getNtemps/:Ntemps', function(req, res){
  	//res.send ('this is the all route')
  	var numberOftemps = req.params.Ntemps
  	Temps.getNtemps(numberOftemps, function(data){
+ 		res.send(JSON.stringify(data))
+ 	})
+})
+
+
+// returns records from Temp collection for last N days
+// , where N days is a parameter.  
+router.get('/LastNDays/:NumOfDays', function(req, res){
+ 	var NumOfDays = req.params.NumOfDays
+ 	Temps.getTemps(NumOfDays, function(data){
  		res.send(JSON.stringify(data))
  	})
 })

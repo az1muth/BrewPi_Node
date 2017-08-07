@@ -44,6 +44,33 @@ exports.getNtemps = function(Nfilter,cb){
 }
 
 
+/* returns records for last N days. Where Ndays is a param
+with a default value that returns all data.  */
+exports.getTemps = function(Ndays=1e3,cb){
+  // date calc all in milliseconds
+  // number of seconds in 1day = 8.64e4
+  // mongo created data is javascript/1000
+  console.log("Ndays: "+ Ndays + "  Sec in Ndays:" + Ndays*8.64E4)
+  var _created = (Date.now()/1000) - (Ndays*8.64e4) 
+  console.log('Now/1000:' + Date.now()/1000 + "  _created:" + _created )
+  // --- using mongoose approach ----
+	        var query = tempModel.find({})
+	        	//using the mongoose query builder
+	        	//JSON doc equivalent would be find({'created':{$gt:_created}})
+	        	.where('created').gt(_created)
+	        	.exec( function(err, results){
+	        		format4Chart(results, function(data){
+	        			cb(data)
+	        		})
+	        	})
+	        // -- END mongoose approach ---
+}
+
+
+
+
+
+
 /* returns a json doc formatted for use with HiCharts line chart.
 one key in the json doc 'data' that is and array of arrays 
 with x,y data. */
@@ -53,7 +80,11 @@ function format4Chart(datArray, cb){
         var pointArray = []
 		for (i=0;i<datArray.length;i++){
 		 	pointArray = []
-		 	pointArray.push(datArray[i].created)
+		 	//created in unix ts in mongodb. multipy by 1000 to 
+		 	//get JS format
+		 	pointArray.push(datArray[i].created * 1000)
+		 	//trying the virtual property JS_created
+		 	//pointArray.push(datArray[i].JS_created)
 		 	pointArray.push(datArray[i].tempC )
 			wrapperArray.push(pointArray)
 		}	
@@ -129,7 +160,7 @@ function FirstOrLast(intSort, cb){
 	query.exec(function(err,results){
 		//convert unix date string to datestring
 		var newDate = new Date(results.created*1000).toString();
-		console.log('Latest: ' + newDate + "   " + results.tempC);
+		//console.log('Latest: ' + newDate + "   " + results.tempC);
 		cb(results)
 	})
 }
